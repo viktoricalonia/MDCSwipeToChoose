@@ -39,11 +39,8 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
     self.mdc_options = options ? options : [MDCSwipeOptions new];
     self.mdc_viewState = [MDCViewState new];
     self.mdc_viewState.originalCenter = self.center;
-    self.mdc_viewState.originalTransform = self.layer.transform;
 
-    if (options.swipeEnabled) {
-        [self mdc_setupPanGestureRecognizer];
-    }
+    [self mdc_setupPanGestureRecognizer];
 }
 
 - (void)mdc_swipe:(MDCSwipeDirection)direction {
@@ -68,7 +65,7 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
 
     // Finalize upon completion of the animations.
     void (^completion)(BOOL) = ^(BOOL finished) {
-        if (finished) { [self mdc_finalizePositionForDirection:direction]; }
+        if (finished) { [self mdc_finalizePosition]; }
     };
 
     [UIView animateWithDuration:self.mdc_options.swipeAnimationDuration
@@ -116,10 +113,6 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
 
 - (void)mdc_finalizePosition {
     MDCSwipeDirection direction = [self mdc_directionOfExceededThreshold];
-    [self mdc_finalizePositionForDirection:direction];
-}
-
-- (void)mdc_finalizePositionForDirection:(MDCSwipeDirection)direction {
     switch (direction) {
         case MDCSwipeDirectionRight:
         case MDCSwipeDirectionLeft: {
@@ -153,33 +146,33 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
 - (void)mdc_exitSuperviewFromTranslation:(CGPoint)translation {
     MDCSwipeDirection direction = [self mdc_directionOfExceededThreshold];
     id<MDCSwipeToChooseDelegate> delegate = self.mdc_options.delegate;
-    if ([delegate respondsToSelector:@selector(view:shouldBeChosenWithDirection:yes:no:)]) {
-        [delegate view:self shouldBeChosenWithDirection:direction yes:^{
-            MDCSwipeResult *state = [MDCSwipeResult new];
-            state.view = self;
-            state.translation = translation;
-            state.direction = direction;
-            state.onCompletion = ^{
-                if ([delegate respondsToSelector:@selector(view:wasChosenWithDirection:)]) {
-                    [delegate view:self wasChosenWithDirection:direction];
-                }
-            };
-            if ([delegate respondsToSelector:@selector(view:willChosenWithDirection:)]) {
-                [delegate view:self willChosenWithDirection:direction];
-            }
-            self.mdc_options.onChosen(state);
-        } no:^{
+    if ([delegate respondsToSelector:@selector(view:shouldBeChosenWithDirection:)]) {
+        BOOL should = [delegate view:self shouldBeChosenWithDirection:direction];
+        if (!should) {
             [self mdc_returnToOriginalCenter];
             if (self.mdc_options.onCancel != nil){
                 self.mdc_options.onCancel(self);
             }
-        }];
+            return;
+        }
     }
+
+    MDCSwipeResult *state = [MDCSwipeResult new];
+    state.view = self;
+    state.translation = translation;
+    state.direction = direction;
+    state.onCompletion = ^{
+        if ([delegate respondsToSelector:@selector(view:wasChosenWithDirection:)]) {
+            [delegate view:self wasChosenWithDirection:direction];
+        }
+    };
+    [delegate view:self willChosenWithDirection:direction];
+    self.mdc_options.onChosen(state);
 }
 
 - (void)mdc_executeOnPanBlockForTranslation:(CGPoint)translation {
     if (self.mdc_options.onPan) {
-        CGFloat thresholdRatio = MIN(1.f, fabs(translation.x)/self.mdc_options.threshold);
+        CGFloat thresholdRatio = MIN(1.f, fabsf(translation.x)/self.mdc_options.threshold);
 
         MDCSwipeDirection direction = MDCSwipeDirectionNone;
         if (translation.x > 0.f) {
@@ -249,9 +242,7 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
         } else {
             self.mdc_viewState.rotationDirection = MDCRotationTowardsCenter;
         }
-    } else if (panGestureRecognizer.state == UIGestureRecognizerStateEnded ||
-               panGestureRecognizer.state == UIGestureRecognizerStateCancelled ||
-               panGestureRecognizer.state == UIGestureRecognizerStateFailed) {
+    } else if (panGestureRecognizer.state == UIGestureRecognizerStateEnded) {
         // Either move the view back to its original position or move it off screen.
         [self mdc_finalizePosition];
     } else {
