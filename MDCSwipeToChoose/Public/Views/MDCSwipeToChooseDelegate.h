@@ -24,7 +24,7 @@
  * Sent when a view was not swiped past the selection threshold. The view is
  * returned to its original position before this message is sent.
  */
-- (void)viewDidCancelSwipe:(UIVie  *)view;
+- (void)viewDidCancelSwipe:(UIView *)view;
 
 /*!
  * Sent before a choice is made. Return `no` to prevent the choice from being made,
