@@ -164,6 +164,9 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
                     [delegate view:self wasChosenWithDirection:direction];
                 }
             };
+            if ([delegate respondsToSelector:@selector(view:willChosenWithDirection:)]) {
+                [delegate view:self willChosenWithDirection:direction];
+            }
             self.mdc_options.onChosen(state);
         } no:^{
             [self mdc_returnToOriginalCenter];

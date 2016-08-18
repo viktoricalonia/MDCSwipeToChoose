@@ -24,7 +24,7 @@
  * Sent when a view was not swiped past the selection threshold. The view is
  * returned to its original position before this message is sent.
  */
-- (void)viewDidCancelSwipe:(UIView *)view;
+- (void)viewDidCancelSwipe:(UIVie  *)view;
 
 /*!
  * Sent before a choice is made. Return `no` to prevent the choice from being made,
@@ -39,5 +39,10 @@
  * is removed from the view hierarchy by the time this message is sent.
  */
 - (void)view:(UIView *)view wasChosenWithDirection:(MDCSwipeDirection)direction;
+/*!
+ * Sent after a choice is made. When using the default `MDCSwipeOptions`, the `view`
+ * is removed from the view hierarchy by the time this message is sent.
+ */
+- (void)view:(UIView *)view willChosenWithDirection:(MDCSwipeDirection)direction;
 
 @end
