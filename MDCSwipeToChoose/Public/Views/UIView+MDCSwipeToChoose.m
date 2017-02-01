@@ -129,6 +129,10 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
 }
 
 - (void)mdc_returnToOriginalCenter {
+    id<MDCSwipeToChooseDelegate> delegate = self.mdc_options.delegate;
+    if ([delegate respondsToSelector:@selector(viewWillCancelSwipe:)]) {
+        [delegate viewWillCancelSwipe:self];
+    }
     [UIView animateWithDuration:self.mdc_options.swipeCancelledAnimationDuration
                           delay:0.0
                         options:self.mdc_options.swipeCancelledAnimationOptions
