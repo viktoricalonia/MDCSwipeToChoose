@@ -138,7 +138,7 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
     
     MDCCancelDirection direction = [self mdc_directionOfExceededThresholdVertical];
     if (direction == MDCCancelDirectionBottom) {
-        moveToPoint = CGPointMake(self.mdc_viewState.originalCenter.x, self.mdc_viewState.originalCenter.y + self.frame.size.height);
+        moveToPoint = CGPointMake(self.mdc_viewState.originalCenter.x, self.mdc_viewState.originalCenter.y * 2);
     }
     
     [UIView animateWithDuration:self.mdc_options.swipeCancelledAnimationDuration
