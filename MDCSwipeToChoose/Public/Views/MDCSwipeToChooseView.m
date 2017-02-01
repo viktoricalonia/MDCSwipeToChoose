@@ -104,6 +104,7 @@ static CGFloat const MDCSwipeToChooseViewLabelWidth = 65.f;
     MDCSwipeOptions *options = [MDCSwipeOptions new];
     options.delegate = self.options.delegate;
     options.threshold = self.options.threshold;
+    options.thresholdVertical = self.options.thresholdVertical;
 
     __block UIView *likedImageView = self.likedView;
     __block UIView *nopeImageView = self.nopeView;

@@ -75,6 +75,7 @@ typedef void (^MDCSwipeToChooseOnCancelBlock)(UIView *swipedView);
  * provided in the `-init` method.
  */
 @property (nonatomic, assign) CGFloat threshold;
+@property (nonatomic, assign) CGFloat thresholdVertical;
 
 /*!
  * When a view is panned, it is rotated slightly. Adjust this value to increase or decrease

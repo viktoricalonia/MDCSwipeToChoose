@@ -41,6 +41,7 @@
  * does not imply that the threshold has been reached.
  */
 @property (nonatomic, assign) MDCSwipeDirection direction;
+@property (nonatomic, assign) MDCCancelDirection cancelDirection;
 
 /*!
  * The ratio of the threshold that has been reached. This can take on any value

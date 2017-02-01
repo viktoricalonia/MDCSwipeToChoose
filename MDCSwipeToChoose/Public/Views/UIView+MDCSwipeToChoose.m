@@ -133,12 +133,20 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
     if ([delegate respondsToSelector:@selector(viewWillCancelSwipe:)]) {
         [delegate viewWillCancelSwipe:self];
     }
+    
+    CGPoint moveToPoint = self.mdc_viewState.originalCenter;
+    
+    MDCCancelDirection direction = [self mdc_directionOfExceededThresholdVertical];
+    if (direction == MDCCancelDirectionBottom) {
+        moveToPoint = CGPointMake(self.mdc_viewState.originalCenter.x, self.mdc_viewState.originalCenter.y + self.frame.size.height);
+    }
+    
     [UIView animateWithDuration:self.mdc_options.swipeCancelledAnimationDuration
                           delay:0.0
                         options:self.mdc_options.swipeCancelledAnimationOptions
                      animations:^{
                          self.layer.transform = self.mdc_viewState.originalTransform;
-                         self.center = self.mdc_viewState.originalCenter;
+                         self.center = moveToPoint;
                      } completion:^(BOOL finished) {
                          id<MDCSwipeToChooseDelegate> delegate = self.mdc_options.delegate;
                          if ([delegate respondsToSelector:@selector(viewDidCancelSwipe:)]) {
@@ -227,6 +235,14 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
         return MDCSwipeDirectionLeft;
     } else {
         return MDCSwipeDirectionNone;
+    }
+}
+
+- (MDCCancelDirection)mdc_directionOfExceededThresholdVertical {
+    if (self.center.y > self.mdc_viewState.originalCenter.y + self.mdc_options.thresholdVertical) {
+        return MDCCancelDirectionBottom;
+    } else {
+        return MDCCancelDirectionCenter;
     }
 }
 

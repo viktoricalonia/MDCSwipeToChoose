@@ -79,6 +79,7 @@
  * provided in the `-init` method.
  */
 @property (nonatomic, assign) CGFloat threshold;
+@property (nonatomic, assign) CGFloat thresholdVertical;
 
 /*!
  * A callback to be executed when the view is panned. The block takes an instance of

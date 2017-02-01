@@ -34,3 +34,8 @@ typedef NS_ENUM(NSInteger, MDCSwipeDirection) {
     MDCSwipeDirectionLeft,
     MDCSwipeDirectionRight
 };
+
+typedef NS_ENUM(NSInteger, MDCCancelDirection) {
+    MDCCancelDirectionCenter = 0,
+    MDCCancelDirectionBottom
+};
