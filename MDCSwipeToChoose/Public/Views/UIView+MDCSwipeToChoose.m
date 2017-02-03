@@ -190,7 +190,7 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
         CGFloat thresholdRatio = MIN(1.f, fabsf(translation.x)/self.mdc_options.threshold);
 
         MDCSwipeDirection direction = MDCSwipeDirectionNone;
-        if (translation.x > self.mdc_options.triggerVertical) {
+        if (translation.y > self.mdc_options.triggerVertical) {
             direction = MDCSwipeDirectionBottom;
         } if (translation.x > 0.f) {
             direction = MDCSwipeDirectionRight;
