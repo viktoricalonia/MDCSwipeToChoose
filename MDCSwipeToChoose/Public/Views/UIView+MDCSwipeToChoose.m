@@ -190,9 +190,9 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
         CGFloat thresholdRatio = MIN(1.f, fabsf(translation.x)/self.mdc_options.threshold);
 
         MDCSwipeDirection direction = MDCSwipeDirectionNone;
-        if (translation.y > self.mdc_options.triggerVertical) {
+        if (translation.y > self.mdc_options.triggerVertical && translation.y > translation.x ) {
             direction = MDCSwipeDirectionBottom;
-        } if (translation.x > 0.f) {
+        } else if (translation.x > 0.f) {
             direction = MDCSwipeDirectionRight;
         } else if (translation.x < 0.f) {
             direction = MDCSwipeDirectionLeft;
@@ -234,7 +234,9 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
 }
 
 - (MDCSwipeDirection)mdc_directionOfExceededThreshold {
-    if (self.center.y > self.mdc_viewState.originalCenter.y + self.mdc_options.triggerVertical) {
+    CGFloat directionX = fabs(self.mdc_viewState.originalCenter.x - self.center.x);
+    CGFloat directionY = fabs(self.mdc_viewState.originalCenter.y - self.center.y);
+    if (self.center.y > self.mdc_viewState.originalCenter.y + self.mdc_options.triggerVertical && directionX < directionY) {
         return MDCSwipeDirectionBottom;
     } else if (self.center.x > self.mdc_viewState.originalCenter.x + self.mdc_options.threshold) {
         return MDCSwipeDirectionRight;
