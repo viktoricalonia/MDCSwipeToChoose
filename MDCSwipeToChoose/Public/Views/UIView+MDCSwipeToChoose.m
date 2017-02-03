@@ -122,6 +122,7 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
             break;
         }
         case MDCSwipeDirectionNone:
+        case MDCSwipeDirectionBottom:
             [self mdc_returnToOriginalCenter];
             [self mdc_executeOnPanBlockForTranslation:CGPointZero];
             break;
@@ -134,19 +135,21 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
         [delegate viewWillCancelSwipe:self];
     }
     
-    CGPoint moveToPoint = self.mdc_viewState.originalCenter;
-    
-    MDCCancelDirection direction = [self mdc_directionOfExceededThresholdVertical];
-    if (direction == MDCCancelDirectionBottom) {
-        moveToPoint = CGPointMake(self.mdc_viewState.originalCenter.x, self.mdc_viewState.originalCenter.y * 2);
-    }
-    
     [UIView animateWithDuration:self.mdc_options.swipeCancelledAnimationDuration
                           delay:0.0
                         options:self.mdc_options.swipeCancelledAnimationOptions
                      animations:^{
                          self.layer.transform = self.mdc_viewState.originalTransform;
-                         self.center = moveToPoint;
+                         
+                         MDCSwipeDirection direction = [self mdc_directionOfExceededThreshold];
+                         if (direction == MDCSwipeDirectionBottom) {
+                             CGPoint moveToPoint = CGPointMake(self.mdc_viewState.originalCenter.x, self.mdc_viewState.originalCenter.y * 4);
+                             self.center = moveToPoint;
+                         } else {
+                             CGPoint moveToPoint = CGPointMake(self.mdc_viewState.originalCenter.x, self.mdc_viewState.originalCenter.y);
+                             self.center = moveToPoint;
+                         }
+
                      } completion:^(BOOL finished) {
                          id<MDCSwipeToChooseDelegate> delegate = self.mdc_options.delegate;
                          if ([delegate respondsToSelector:@selector(viewDidCancelSwipe:)]) {
@@ -187,7 +190,9 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
         CGFloat thresholdRatio = MIN(1.f, fabsf(translation.x)/self.mdc_options.threshold);
 
         MDCSwipeDirection direction = MDCSwipeDirectionNone;
-        if (translation.x > 0.f) {
+        if (translation.x > self.mdc_options.triggerVertical) {
+            direction = MDCSwipeDirectionBottom;
+        } if (translation.x > 0.f) {
             direction = MDCSwipeDirectionRight;
         } else if (translation.x < 0.f) {
             direction = MDCSwipeDirectionLeft;
@@ -229,20 +234,14 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
 }
 
 - (MDCSwipeDirection)mdc_directionOfExceededThreshold {
-    if (self.center.x > self.mdc_viewState.originalCenter.x + self.mdc_options.threshold) {
+    if (self.center.y > self.mdc_viewState.originalCenter.y + self.mdc_options.triggerVertical) {
+        return MDCSwipeDirectionBottom;
+    } else if (self.center.x > self.mdc_viewState.originalCenter.x + self.mdc_options.threshold) {
         return MDCSwipeDirectionRight;
     } else if (self.center.x < self.mdc_viewState.originalCenter.x - self.mdc_options.threshold) {
         return MDCSwipeDirectionLeft;
     } else {
         return MDCSwipeDirectionNone;
-    }
-}
-
-- (MDCCancelDirection)mdc_directionOfExceededThresholdVertical {
-    if (self.center.y > self.mdc_viewState.originalCenter.y + self.mdc_options.thresholdVertical) {
-        return MDCCancelDirectionBottom;
-    } else {
-        return MDCCancelDirectionCenter;
     }
 }
 

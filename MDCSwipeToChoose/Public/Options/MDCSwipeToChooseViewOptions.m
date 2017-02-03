@@ -39,7 +39,7 @@
         _nopeRotationAngle = 15.f;
 
         _threshold = 100.f;
-        _thresholdVertical = 128.0;
+        _triggerVertical = 64.0;
     }
     return self;
 }
