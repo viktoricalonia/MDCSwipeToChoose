@@ -114,6 +114,7 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
 - (void)mdc_finalizePosition {
     MDCSwipeDirection direction = [self mdc_directionOfExceededThreshold];
     switch (direction) {
+        case MDCSwipeDirectionBottom:
         case MDCSwipeDirectionRight:
         case MDCSwipeDirectionLeft: {
             CGPoint translation = MDCCGPointSubtract(self.center,
@@ -122,7 +123,6 @@ const void * const MDCViewStateKey = &MDCViewStateKey;
             break;
         }
         case MDCSwipeDirectionNone:
-        case MDCSwipeDirectionBottom:
             [self mdc_returnToOriginalCenter];
             [self mdc_executeOnPanBlockForTranslation:CGPointZero];
             break;
